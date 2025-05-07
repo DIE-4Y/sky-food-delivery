@@ -1,21 +1,28 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.EmployeeService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 
@@ -61,7 +68,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 新增员工
-     *
      * @param employeeDTO 新增员工信息
      */
     @Override
@@ -69,15 +75,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         //复制属性给Employee进行数据库操作
         BeanUtils.copyProperties(employeeDTO, employee);
+
         //多余属性另外设置
         employee.setStatus(StatusConstant.ENABLE);
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
+
         //createUser和updateUser 使用ThreadLocal动态修改
         employee.setCreateUser(BaseContext.getCurrentId());
         employee.setUpdateUser(BaseContext.getCurrentId());
+
         employeeMapper.insert(employee);
     }
+
+    /**
+     * 员工信息分页查询
+     * @param pageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO pageQueryDTO) {
+        PageHelper.startPage(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(pageQueryDTO, employee);
+        Page<Employee> page = employeeMapper.pageQuery(employee);
+        return new PageResult(page.getTotal(), page.getResult());
+    }
+
 
 }
