@@ -68,6 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 新增员工
+     *
      * @param employeeDTO 新增员工信息
      */
     @Override
@@ -91,6 +92,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 员工信息分页查询
+     *
      * @param pageQueryDTO
      * @return
      */
@@ -101,6 +103,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         BeanUtils.copyProperties(pageQueryDTO, employee);
         Page<Employee> page = employeeMapper.pageQuery(employee);
         return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 修改用户状态
+     *
+     * @param status
+     * @param id
+     * @return
+     */
+    @Override
+    public void alterStatus(Integer status, Long id) {
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
+                .build();
+
+        employeeMapper.update(employee);
     }
 
 

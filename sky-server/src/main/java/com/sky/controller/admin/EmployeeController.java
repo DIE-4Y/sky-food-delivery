@@ -93,14 +93,29 @@ public class EmployeeController {
 
     /**
      * 员工信息分页查询
+     *
      * @param pageQueryDTO
      * @return
      */
     @GetMapping("/page")
     @ApiOperation("员工信息分页查询")
-    public Result<PageResult> page(EmployeePageQueryDTO pageQueryDTO){
+    public Result<PageResult> page(EmployeePageQueryDTO pageQueryDTO) {
         log.info("动态查询员工信息：{}", pageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 修改用户状态
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("修改用户状态")
+    public Result alterStatus(@PathVariable Integer status, Long id) {
+        log.info("修改用户状态，状态：{}，id：{}", status, id);
+        employeeService.alterStatus(status, id);
+        return Result.success();
     }
 }

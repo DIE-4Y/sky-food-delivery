@@ -13,11 +13,29 @@
             <if test="sex != null and sex != ''">and sex=#{sex}</if>
             <if test="idNumber != null and idNumber != ''">and id_number=#{idNumber}</if>
             <if test="status != null and status != ''">and status=#{status}</if>
-            <if test="createTime != null and createTime != ''">and create_time=#{createTime}</if>
-            <if test="updateTime != null and updateTime != ''">and update_time=#{updateTime}</if>
+            <if test="createTime != null">and create_time=#{createTime}</if>
+            <if test="updateTime != null">and update_time=#{updateTime}</if>
             <if test="createUser != null and createUser != ''">and create_user=#{createUser}</if>
             <if test="updateUser != null and updateUser != ''">and update_user=#{updateUser}</if>
         </where>
         order by update_time desc
     </select>
+
+    <update id="update" parameterType="com.sky.entity.Employee">
+        update employee
+        <set>
+            <if test="name != null">name=#{name},</if>
+            <if test="username != null">username=#{username},</if>
+            <if test="password != null">password=MD5(#{username}),</if>
+            <if test="phone != null">phone=#{phone},</if>
+            <if test="sex != null">sex=#{sex},</if>
+            <if test="idNumber != null">id_number=#{idNumber},</if>
+            <if test="status != null">status=#{status},</if>
+            <if test="createTime != null">create_time=#{createTime},</if>
+            <if test="updateTime != null">update_time=#{updateTime},</if>
+            <if test="createUser != null">create_user=#{createUser},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+        </set>
+        where id=#{id}
+    </update>
 </mapper>
