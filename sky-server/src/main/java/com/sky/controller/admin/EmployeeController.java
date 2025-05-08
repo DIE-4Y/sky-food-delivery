@@ -13,6 +13,7 @@ import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -106,16 +107,43 @@ public class EmployeeController {
     }
 
     /**
-     * 修改用户状态
+     * 修改用户账号状态
+     *
      * @param status
      * @param id
      * @return
      */
     @PostMapping("/status/{status}")
-    @ApiOperation("修改用户状态")
+    @ApiOperation("修改用户账号状态")
     public Result alterStatus(@PathVariable Integer status, Long id) {
-        log.info("修改用户状态，状态：{}，id：{}", status, id);
+        log.info("修改用户账号状态，状态：{}，id：{}", status, id);
         employeeService.alterStatus(status, id);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @GetMapping("{id}")
+    @ApiOperation("根据id查询员工信息")
+    public Result<Employee> findById (@PathVariable Long id){
+        log.info("根据id查询员工信息，{}",id);
+        Employee employee = employeeService.findById(id);
+        return Result.success(employee);
+    }
+
+    /**
+     * 修改员工信息
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改员工信息")
+    public Result updateInfo(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("修改员工信息,{}", employeeDTO);
+        employeeService.updateInfo(employeeDTO);
         return Result.success();
     }
 }
