@@ -6,9 +6,11 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
@@ -34,6 +36,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     /**
      * 新增菜品
@@ -104,5 +108,26 @@ public class DishServiceImpl implements DishService {
         }*/
         dishMapper.deleteByIds(ids);
         dishFlavorMapper.deleteByDishIds(ids);
+    }
+
+    /**
+     * 根据id查询菜品信息
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getById(Long id) {
+        Dish dish = dishMapper.getById(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+
+        //给其余属性赋值 CategoryName和Flavors
+        Category category =categoryMapper.getByDishId(dishVO.getCategoryId());
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+
+        dishVO.setCategoryName(category.getName());
+        dishVO.setCategoryId(category.getId());
+        dishVO.setFlavors(dishFlavors);
+        return dishVO;
     }
 }
