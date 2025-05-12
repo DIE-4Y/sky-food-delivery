@@ -9,4 +9,27 @@
         values (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{status}, #{createTime}, #{createUser},
                 #{updateTime}, #{updateUser})
     </insert>
+    <select id="query" resultType="com.sky.vo.DishVO">
+        select dish.id,
+               dish.name,
+               dish.category_id,
+               dish.price,
+               dish.image,
+               dish.description,
+               dish.status,
+               dish.create_time,
+               dish.update_time,
+               dish.create_user,
+               dish.update_user,
+               category.name categoryName
+        from dish,
+             category
+        <where>
+            dish.category_id = category.id
+            <if test="name != null and name != ''">and dish.name like concat('%',#{name}, '%')</if>
+            <if test="categoryId != null">and dish.category_id = #{categoryId}</if>
+            <if test="status != null">and dish.status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
 </mapper>
