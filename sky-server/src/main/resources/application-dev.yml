@@ -17,3 +17,6 @@ sky:
     password: root
     # redis会有16个位数据库相互隔离 若不指定 默认为0号
     database: 0
+  wechat:
+    appid: wx0ca3d61de980f164
+    secret: 48febecb62cb955f2af3d4332d5e6b5d
