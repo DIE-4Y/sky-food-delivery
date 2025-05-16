@@ -8,7 +8,6 @@ import com.sky.result.Result;
 import com.sky.service.UserService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.UserLoginVO;
-import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,7 @@ public class UserController {
 
         //生成jwt令牌
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.USER_ID, user.getOpenid());
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String authentication = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
         //构造返回对象
         UserLoginVO userLoginVO = UserLoginVO.builder()
