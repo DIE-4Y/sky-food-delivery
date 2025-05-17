@@ -42,6 +42,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 新增菜品
+     *
      * @param dishDTO
      * @return
      */
@@ -58,7 +59,7 @@ public class DishServiceImpl implements DishService {
 
         //2.保存口味
         List<DishFlavor> flavors = dishDTO.getFlavors();
-        if(flavors != null && !flavors.isEmpty()){
+        if (flavors != null && !flavors.isEmpty()) {
             //给菜品id赋值
             for (DishFlavor flavor : flavors) {
                 flavor.setDishId(id);
@@ -69,6 +70,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 菜品分页查询
+     *
      * @param dto
      * @return
      */
@@ -82,6 +84,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 批量删除菜品
+     *
      * @param ids
      * @return
      */
@@ -91,14 +94,14 @@ public class DishServiceImpl implements DishService {
         //1.该菜品是否售卖中
         for (Long id : ids) {
             Dish dish = dishMapper.getById(id);
-            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)){
+            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) {
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
         }
 
         //2.是否有某个菜品是否在某个套餐下
         List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);
-        if(setmealIds != null && !setmealIds.isEmpty()){
+        if (setmealIds != null && !setmealIds.isEmpty()) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
 
@@ -113,6 +116,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 根据id查询菜品信息
+     *
      * @param id
      * @return
      */
@@ -134,6 +138,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 修改菜品
+     *
      * @param dishDTO
      * @return
      */
@@ -150,7 +155,7 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteByDishId(dishDTO.getId());
         //再添加
         List<DishFlavor> flavors = dishDTO.getFlavors();
-        if (flavors != null && !flavors.isEmpty()){
+        if (flavors != null && !flavors.isEmpty()) {
             for (DishFlavor flavor : flavors) {
                 flavor.setDishId(dishDTO.getId());
             }
@@ -159,7 +164,24 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
+     * 起售停售菜品
+     *
+     * @param status
+     * @param id
+     * @return
+     */
+    @Override
+    public void alterStatus(Integer status, Long id) {
+        Dish dish = Dish.builder()
+                .status(status)
+                .id(id)
+                .build();
+        dishMapper.update(dish);
+    }
+
+    /**
      * 根据分类id查询菜品
+     *
      * @param categoryId
      * @return
      */
@@ -170,6 +192,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 条件查询菜品和口味
+     *
      * @param dish
      * @return
      */
@@ -180,7 +203,7 @@ public class DishServiceImpl implements DishService {
 
         for (Dish d : dishList) {
             DishVO dishVO = new DishVO();
-            BeanUtils.copyProperties(d,dishVO);
+            BeanUtils.copyProperties(d, dishVO);
 
             //根据菜品id查询对应的口味
             List<DishFlavor> flavors = dishFlavorMapper.getByDishId(d.getId());
