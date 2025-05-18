@@ -41,7 +41,8 @@ public class DishController {
 
         //删除redis中缓存的菜品
         String key = "dish_"+dishDTO.getCategoryId();
-        redisTemplate.delete(key);
+        cleanCache(key);
+
         return Result.success();
     }
 
@@ -69,8 +70,8 @@ public class DishController {
         dishService.deleteBatch(ids);
 
         //直接删除所有缓存菜品
-        Set keys = redisTemplate.keys("dish_*");
-        redisTemplate.delete(keys);
+        cleanCache("dish_*");
+
         return Result.success();
     }
 
@@ -84,6 +85,10 @@ public class DishController {
     @ApiOperation("起售停售菜品")
     public Result alterStatus(@PathVariable Integer status, Long id){
         dishService.alterStatus(status, id);
+
+        //直接删除所有缓存菜品
+        cleanCache("dish_*");
+
         return Result.success();
     }
 
@@ -112,8 +117,8 @@ public class DishController {
         dishService.updateWithFlavor(dishDTO);
 
         //直接删除所有缓存菜品
-        Set keys = redisTemplate.keys("dish_*");
-        redisTemplate.delete(keys);
+        cleanCache("dish_*");
+
         return Result.success();
     }
 
@@ -128,5 +133,14 @@ public class DishController {
         log.info("根据分类id查询菜品, {}", id);
         List<Dish> dishes = dishService.getByCategoryId(id);
         return Result.success(dishes);
+    }
+
+    /**
+     * 统一清理缓存数据
+     * @param pattern
+     */
+    private void cleanCache(String pattern){
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
     }
 }
