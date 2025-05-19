@@ -44,4 +44,11 @@ public interface SetmealService {
      * @return
      */
     void alterStatus(Integer status);
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    SetmealVO getByIdWithDishes(Long id);
 }
