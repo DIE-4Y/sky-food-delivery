@@ -69,6 +69,7 @@ public class SetmealServiceImpl implements SetmealService {
         //保存setmael
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
+        setmeal.setStatus(StatusConstant.DISABLE);
         setmealMapper.insert(setmeal);
 
         //保存对应的菜品
@@ -76,5 +77,19 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDish.setSetmealId(setmeal.getId());
         }
         setmealDishMapper.insertBatch(setmealDTO.getSetmealDishes());
+    }
+
+    /**
+     * 套餐分页查询
+     * @param setmealPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
+        PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
+
+        Page<Setmeal> page = setmealMapper.pageQuery(setmealPageQueryDTO);
+
+        return new PageResult(page.getTotal(), page.getResult());
     }
 }
