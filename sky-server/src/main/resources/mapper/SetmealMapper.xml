@@ -31,6 +31,7 @@
             <if test="name != null and name !=''">and name like concat('%',#{name}, '%')</if>
             <if test="status != null">and status=#{status}</if>
         </where>
+        order by update_time desc
     </select>
 
     <update id="update">
@@ -43,6 +44,7 @@
             <if test="description != null and description !=''">description=#{description}</if>
             <if test="image != null and image !=''">image=#{image}</if>
         </set>
+        where id = #{id}
     </update>
 
     <delete id="deleteByIds">

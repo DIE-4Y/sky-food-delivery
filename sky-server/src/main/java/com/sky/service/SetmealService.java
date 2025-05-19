@@ -41,9 +41,10 @@ public interface SetmealService {
     /**
      * 起售停售套餐
      * @param status
+     * @param id
      * @return
      */
-    void alterStatus(Integer status);
+    void alterStatus(Integer status, Long id);
 
     /**
      * 根据id查询套餐

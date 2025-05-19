@@ -96,12 +96,14 @@ public class SetmealServiceImpl implements SetmealService {
     /**
      * 起售停售套餐
      * @param status
+     * @param id
      * @return
      */
     @Override
-    public void alterStatus(Integer status) {
+    public void alterStatus(Integer status, Long id) {
         Setmeal setmeal = new Setmeal();
         setmeal.setStatus(status);
+        setmeal.setId(id);
         setmealMapper.update(setmeal);
     }
 
