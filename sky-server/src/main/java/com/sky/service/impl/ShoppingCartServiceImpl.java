@@ -95,6 +95,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = new ShoppingCart();
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
         shoppingCart.setUserId(BaseContext.getCurrentId());
-        shoppingCartMapper.deleOne(shoppingCart);
+        shoppingCartMapper.deleteOne(shoppingCart);
     }
 }
