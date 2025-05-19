@@ -121,4 +121,22 @@ public class SetmealServiceImpl implements SetmealService {
         BeanUtils.copyProperties(dishes, setmealVO);
         return setmealVO;
     }
+
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
+    @Override
+    @Transactional
+    public void updateWithDishes(SetmealDTO setmealDTO) {
+        //修改setmeal表
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+        setmealMapper.update(setmeal);
+
+        //修改setmeal_dish表--先删除--再插入
+        setmealDishMapper.deleteBySetmealId(setmealDTO.getId());
+        setmealDishMapper.insertBatch(setmealDTO.getSetmealDishes());
+    }
 }

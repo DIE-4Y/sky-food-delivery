@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/setmeal")
 @Slf4j
-@Api("套餐相关接口")
+@Api(tags = "套餐相关接口")
 public class SetmealController {
 
     @Autowired
@@ -73,5 +73,16 @@ public class SetmealController {
         return Result.success(setmealVO);
     }
 
-
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO){
+        log.info("修改套餐, " + setmealDTO);
+        setmealService.updateWithDishes(setmealDTO);
+        return Result.success();
+    }
 }
