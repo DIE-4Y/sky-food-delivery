@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/setmeal")
 @Slf4j
@@ -30,7 +32,7 @@ public class SetmealController {
     @ApiOperation("新增套餐")
     public Result save(@RequestBody SetmealDTO setmealDTO){
         log.info("新增套餐");
-        setmealService.saveWithDish(setmealDTO);
+        setmealService.saveWithSetmealDish(setmealDTO);
         return Result.success();
     }
 
@@ -69,7 +71,7 @@ public class SetmealController {
     @ApiOperation("根据id查询套餐")
     public Result<SetmealVO> getById(@PathVariable Long id){
         log.info("根据id查询套餐, id:{}", id);
-        SetmealVO setmealVO = setmealService.getByIdWithDishes(id);
+        SetmealVO setmealVO = setmealService.getByIdWithSetmealDishes(id);
         return Result.success(setmealVO);
     }
 
@@ -82,7 +84,20 @@ public class SetmealController {
     @ApiOperation("修改套餐")
     public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO){
         log.info("修改套餐, " + setmealDTO);
-        setmealService.updateWithDishes(setmealDTO);
+        setmealService.updateWithSetmealDishes(setmealDTO);
+        return Result.success();
+    }
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("批量删除套餐")
+    public Result deleteByIds(@RequestParam List<Long> ids){
+        log.info("批量删除套餐," + ids);
+        setmealService.deleteWithSetmealDishes(ids);
         return Result.success();
     }
 }

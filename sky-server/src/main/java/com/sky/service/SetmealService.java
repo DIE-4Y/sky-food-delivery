@@ -29,7 +29,7 @@ public interface SetmealService {
      * @param setmealDTO
      * @return
      */
-    void saveWithDish(SetmealDTO setmealDTO);
+    void saveWithSetmealDish(SetmealDTO setmealDTO);
 
     /**
      * 套餐分页查询
@@ -50,12 +50,18 @@ public interface SetmealService {
      * @param id
      * @return
      */
-    SetmealVO getByIdWithDishes(Long id);
+    SetmealVO getByIdWithSetmealDishes(Long id);
 
     /**
      * 修改套餐
      * @param setmealDTO
      * @return
      */
-    void updateWithDishes(SetmealDTO setmealDTO);
+    void updateWithSetmealDishes(SetmealDTO setmealDTO);
+
+    /**
+     * 批量删除套餐及其相关菜品
+     * @param ids
+     */
+    void deleteWithSetmealDishes(List<Long> ids);
 }

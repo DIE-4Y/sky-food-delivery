@@ -32,7 +32,7 @@
             <if test="status != null">and status=#{status}</if>
         </where>
     </select>
-    
+
     <update id="update">
         update setmeal
         <set>
@@ -44,4 +44,11 @@
             <if test="image != null and image !=''">image=#{image}</if>
         </set>
     </update>
+
+    <delete id="deleteByIds">
+        delete from setmeal where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

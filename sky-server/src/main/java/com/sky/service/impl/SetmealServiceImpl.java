@@ -65,7 +65,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     @Transactional
-    public void saveWithDish(SetmealDTO setmealDTO) {
+    public void saveWithSetmealDish(SetmealDTO setmealDTO) {
         //保存setmael
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
@@ -111,7 +111,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @return
      */
     @Override
-    public SetmealVO getByIdWithDishes(Long id) {
+    public SetmealVO getByIdWithSetmealDishes(Long id) {
         //根据id查询套餐
         Setmeal setmeal =  setmealMapper.getById(id);
         //根据套餐id查询菜品
@@ -129,7 +129,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     @Transactional
-    public void updateWithDishes(SetmealDTO setmealDTO) {
+    public void updateWithSetmealDishes(SetmealDTO setmealDTO) {
         //修改setmeal表
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
@@ -138,5 +138,17 @@ public class SetmealServiceImpl implements SetmealService {
         //修改setmeal_dish表--先删除--再插入
         setmealDishMapper.deleteBySetmealId(setmealDTO.getId());
         setmealDishMapper.insertBatch(setmealDTO.getSetmealDishes());
+    }
+
+    /**
+     * 批量删除套餐及其相关菜品
+     * @param ids
+     */
+    @Override
+    public void deleteWithSetmealDishes(List<Long> ids) {
+        //删除套餐表中的对应数据
+        setmealMapper.deleteByIds(ids);
+        //删除setmeal_dish表中的对应数据
+        setmealDishMapper.deleteBySetmealIds(ids);
     }
 }
