@@ -53,6 +53,14 @@ public interface SetmealMapper {
      * @return
      */
     Page<Setmeal> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /**
+     * 更新套餐
+     * @param setmeal
+     * @return
+     */
+    @AutoFill(OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }
 
 

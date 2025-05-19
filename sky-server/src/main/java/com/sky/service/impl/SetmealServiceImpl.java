@@ -92,4 +92,16 @@ public class SetmealServiceImpl implements SetmealService {
 
         return new PageResult(page.getTotal(), page.getResult());
     }
+
+    /**
+     * 起售停售套餐
+     * @param status
+     * @return
+     */
+    @Override
+    public void alterStatus(Integer status) {
+        Setmeal setmeal = new Setmeal();
+        setmeal.setStatus(status);
+        setmealMapper.update(setmeal);
+    }
 }
