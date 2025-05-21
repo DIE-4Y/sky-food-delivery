@@ -2,12 +2,15 @@ package com.sky.controller.user;
 
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.entity.Orders;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,10 +43,24 @@ public class OrderController {
      * @return
      */
     @GetMapping("/historyOrders")
+    @ApiOperation("历史订单查询")
     public Result<PageResult> getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO){
         log.info("历史订单查询" + ordersPageQueryDTO);
         PageResult pageResult = orderService.getHistoryOrders(ordersPageQueryDTO);
         return Result.success(pageResult);
     }
 
+    /**
+     * 查询订单详情
+     * @param id
+     * @return
+     */
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("查询订单详情")
+    public Result<OrderVO> getOrderDetail(@PathVariable Long id){
+        log.info("查询订单详情," + id);
+        OrderVO orderVO = orderService.getOrderDetail(id);
+        return Result.success(orderVO);
+        Orders
+    }
 }
