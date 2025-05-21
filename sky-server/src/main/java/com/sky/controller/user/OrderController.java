@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/user/order")
 @RestController("userOrdersController")
-@Api(tags = "订单相关接口")
+@Api(tags = "c端-订单相关接口")
 @Slf4j
 public class OrderController {
 
@@ -79,5 +79,18 @@ public class OrderController {
         log.info("支付成功，正在修改状态");
         orderService.paySuccess(ordersPaymentDTO);
         return Result.success(orderPaymentVO);
+    }
+
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("取消订单")
+    public Result cancelOrder(@PathVariable Long id){
+        log.info("取消订单," + id);
+        orderService.cancelOrder(id);
+        return Result.success();
     }
 }

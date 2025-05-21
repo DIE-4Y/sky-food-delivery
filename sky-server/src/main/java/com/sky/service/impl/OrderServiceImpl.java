@@ -219,4 +219,20 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
     }
+
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
+    @Override
+    public void cancelOrder(Long id) {
+        //获取订单信息
+        Orders orders = orderMapper.getById(id);
+
+        //设置订单状态和退款状态
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
 }

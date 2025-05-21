@@ -49,4 +49,11 @@ public interface OrderService {
      * @param ordersPaymentDTO
      */
     void paySuccess(OrdersPaymentDTO ordersPaymentDTO);
+
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
+    void cancelOrder(Long id);
 }

@@ -40,6 +40,7 @@
             <if test="deliveryTime != null">and delivery_time=#{deliveryTime}</if>
             <if test="tablewareStatus != null">and tableware_status=#{tablewareStatus}</if>
         </where>
+        order by order_time desc
     </select>
 
     <update id="update" parameterType="com.sky.entity.Orders">
