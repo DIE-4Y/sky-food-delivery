@@ -17,11 +17,11 @@ public interface OrderMapper {
     void insert(Orders orders);
 
     /**
-     * 根据条件查询所有订单
+     * 根据条件分页查询订单
      * @param orders
      * @return
      */
-    Page<Orders> list(Orders orders);
+    Page<Orders> pageQuery(Orders orders);
 
     /**
      * 根据id查询订单

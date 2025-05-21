@@ -18,11 +18,11 @@ public interface OrderService {
     OrderSubmitVO orderSubmit(OrdersSubmitDTO ordersSubmitDTO);
 
     /**
-     * 历史订单查询
+     * 历史订单分页查询
      * @param ordersPageQueryDTO
      * @return
      */
-    PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO);
+    PageResult page(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /**
      * 查询订单详情

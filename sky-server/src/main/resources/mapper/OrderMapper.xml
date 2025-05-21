@@ -13,7 +13,7 @@
                 #{tablewareStatus})
     </insert>
 
-    <select id="list" resultType="com.sky.entity.Orders">
+    <select id="pageQuery" resultType="com.sky.entity.Orders">
         select * from orders
         <where>
             user_id=#{userId}

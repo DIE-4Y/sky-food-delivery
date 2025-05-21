@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,12 +102,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 历史订单查询
+     * 历史订单分页查询
      * @param ordersPageQueryDTO
      * @return
      */
     @Override
-    public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+    public PageResult page(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Orders orders = new Orders();
         if (ordersPageQueryDTO.getStatus() != null){
@@ -116,9 +115,21 @@ public class OrderServiceImpl implements OrderService {
         }
         orders.setUserId(BaseContext.getCurrentId());
 
-        Page<Orders> page = orderMapper.list(orders);
+        Page<Orders> page = orderMapper.pageQuery(orders);
 
-        return new PageResult(page.getTotal(), page.getResult());
+        //查询订单细
+        List<OrderVO> orderVOS = new ArrayList<>();
+        if (page != null && page.getTotal() > 0) {
+            for (Orders od : page) {
+                List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(od.getId());
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(od, orderVO);
+                orderVO.setOrderDetailList(orderDetailList);
+                orderVOS.add(orderVO);
+            }
+
+        }
+        return new PageResult(page.getTotal(), orderVOS);
     }
 
     /**

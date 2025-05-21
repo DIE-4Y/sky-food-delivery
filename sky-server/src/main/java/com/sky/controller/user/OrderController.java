@@ -40,15 +40,15 @@ public class OrderController {
     }
 
     /**
-     * 历史订单查询
+     * 历史订单分页查询
      * @param ordersPageQueryDTO
      * @return
      */
     @GetMapping("/historyOrders")
     @ApiOperation("历史订单查询")
-    public Result<PageResult> getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO){
+    public Result<PageResult> page(OrdersPageQueryDTO ordersPageQueryDTO){
         log.info("历史订单查询" + ordersPageQueryDTO);
-        PageResult pageResult = orderService.getHistoryOrders(ordersPageQueryDTO);
+        PageResult pageResult = orderService.page(ordersPageQueryDTO);
         return Result.success(pageResult);
     }
 
@@ -80,5 +80,4 @@ public class OrderController {
         orderService.paySuccess(ordersPaymentDTO);
         return Result.success(orderPaymentVO);
     }
-
 }
