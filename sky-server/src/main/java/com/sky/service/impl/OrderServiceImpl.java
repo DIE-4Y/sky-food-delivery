@@ -116,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setUserId(BaseContext.getCurrentId());
 
         Page<Orders> page = orderMapper.list(orders);
+
         return new PageResult(page.getTotal(), page.getResult());
     }
 
@@ -126,8 +127,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public OrderVO getOrderDetail(Long id) {
-        Orders orders =orderMapper.getById(id);
-        List<OrderDetail> orderDetailList = orderMapper.getByOrderId(id);
+
+        Orders orders = orderMapper.getById(id);
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         OrderVO orderVO = new OrderVO();
         BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetailList);

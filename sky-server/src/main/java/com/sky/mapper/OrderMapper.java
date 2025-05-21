@@ -31,11 +31,4 @@ public interface OrderMapper {
     @Select("select * from orders where id=#{id}")
     Orders getById(Long id);
 
-    /**
-     * 根据订单id查询订单细节
-     * @param orderId
-     * @return
-     */
-    @Select("select * from order_detail where order_id=#{orderId}")
-    List<OrderDetail> getByOrderId(Long orderId);
 }

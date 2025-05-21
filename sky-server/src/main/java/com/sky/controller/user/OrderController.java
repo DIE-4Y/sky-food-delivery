@@ -61,6 +61,5 @@ public class OrderController {
         log.info("查询订单详情," + id);
         OrderVO orderVO = orderService.getOrderDetail(id);
         return Result.success(orderVO);
-        Orders
     }
 }
