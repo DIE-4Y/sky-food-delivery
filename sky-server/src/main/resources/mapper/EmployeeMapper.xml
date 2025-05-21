@@ -26,7 +26,7 @@
         <set>
             <if test="name != null">name=#{name},</if>
             <if test="username != null">username=#{username},</if>
-            <if test="password != null">password=MD5(#{username}),</if>
+            <if test="password != null">password=MD5(#{password}),</if>
             <if test="phone != null">phone=#{phone},</if>
             <if test="sex != null">sex=#{sex},</if>
             <if test="idNumber != null">id_number=#{idNumber},</if>
