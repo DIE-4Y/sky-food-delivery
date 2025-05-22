@@ -452,6 +452,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void complete(Long id) {
         Orders orders = orderMapper.getById(id);
+
+        //只有状态为DELIVERY_IN_PROGRESS才能完成订单
+        if(orders.getStatus() != Orders.DELIVERY_IN_PROGRESS){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
         orders.setDeliveryTime(LocalDateTime.now());
         orders.setStatus(Orders.COMPLETED);
         orderMapper.update(orders);
