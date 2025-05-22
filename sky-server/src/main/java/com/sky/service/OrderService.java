@@ -90,4 +90,10 @@ public interface OrderService {
      * @return
      */
     void reject(OrdersRejectionDTO ordersRejectionDTO);
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    void delevery(Long id);
 }

@@ -260,7 +260,6 @@ public class OrderServiceImpl implements OrderService {
                 .addressBookId(orders.getAddressBookId())
                 .remark(orders.getRemark())
                 .payMethod(orders.getPayMethod())
-                .estimatedDeliveryTime(orders.getEstimatedDeliveryTime())
                 .deliveryStatus(orders.getDeliveryStatus())
                 .tablewareNumber(orders.getTablewareNumber())
                 .tablewareStatus(orders.getTablewareStatus())
@@ -350,6 +349,19 @@ public class OrderServiceImpl implements OrderService {
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    @Override
+    public void delevery(Long id) {
+        Orders orders = orderMapper.getById(id);
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        orders.setDeliveryStatus(1);
+        //预计送达时间暂未设置
         orderMapper.update(orders);
     }
 
