@@ -434,9 +434,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delevery(Long id) {
         Orders orders = orderMapper.getById(id);
+        //只有处于待派送状态才能派送
+        if (orders.getStatus() != Orders.TO_BE_CONFIRMED){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
         orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
-        orders.setDeliveryStatus(1);
-        //预计送达时间暂未设置
+        //预计送达时间 递送状态 未设置
         orderMapper.update(orders);
     }
 
