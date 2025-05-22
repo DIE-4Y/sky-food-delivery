@@ -256,6 +256,11 @@ public class OrderServiceImpl implements OrderService {
         //获取订单信息
         Orders orders = orderMapper.getById(ordersCancelDTO.getId());
 
+        //用户已支付则退款
+        if(orders.getPayStatus() == Orders.PAID){
+            orders.setPayStatus(Orders.REFUND);
+        }
+
         //设置订单状态
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelReason(ordersCancelDTO.getCancelReason());
