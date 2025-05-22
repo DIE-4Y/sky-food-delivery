@@ -5,10 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
@@ -329,6 +326,20 @@ public class OrderServiceImpl implements OrderService {
     public void confirm( OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = orderMapper.getById(ordersConfirmDTO.getId());
         orders.setStatus(Orders.CONFIRMED);
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 拒单
+     * @param ordersRejectionDTO
+     * @return
+     */
+    @Override
+    public void reject(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders orders = orderMapper.getById(ordersRejectionDTO.getId());
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
 }
