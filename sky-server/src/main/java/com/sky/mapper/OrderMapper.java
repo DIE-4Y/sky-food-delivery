@@ -43,4 +43,12 @@ public interface OrderMapper {
      * @param orders
      */
     void update(Orders orders);
+
+    /**
+     * 统计各个状态的订单数量
+     * @param status
+     * @return
+     */
+    @Select("select count(id) from orders where status=#{status}")
+    Integer getCountByStatus(Integer status);
 }
