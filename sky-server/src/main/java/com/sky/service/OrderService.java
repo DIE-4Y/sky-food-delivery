@@ -55,6 +55,7 @@ public interface OrderService {
      * @return
      */
     void cancelOrder(Long id);
+    void cancelOrder(OrdersCancelDTO ordersCancelDTO);
 
     /**
      * 再来一单

@@ -229,8 +229,18 @@ public class OrderServiceImpl implements OrderService {
         //获取订单信息
         Orders orders = orderMapper.getById(id);
 
-        //设置订单状态和退款状态
+        //设置订单状态
         orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        //获取订单信息
+        Orders orders = orderMapper.getById(ordersCancelDTO.getId());
+
+        //设置订单状态
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
@@ -341,5 +351,14 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
+    }
+
+    /**
+     * 设置退款状态
+     * @param orders
+     */
+    private void refund(Orders orders){
+        orders.setStatus(7);
+        orders.setPayStatus(Orders.REFUND);
     }
 }
