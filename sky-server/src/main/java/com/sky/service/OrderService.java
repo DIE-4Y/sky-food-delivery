@@ -50,12 +50,17 @@ public interface OrderService {
     void paySuccess(OrdersPaymentDTO ordersPaymentDTO);
 
     /**
-     * 取消订单
+     * 用户取消订单
      * @param id
      * @return
      */
-    void cancelOrder(Long id);
-    void cancelOrder(OrdersCancelDTO ordersCancelDTO);
+    void userCancelOrder(Long id);
+
+    /**
+     * 商家取消订单
+     * @param ordersCancelDTO
+     */
+    void adminCancelOrder(OrdersCancelDTO ordersCancelDTO);
 
     /**
      * 再来一单

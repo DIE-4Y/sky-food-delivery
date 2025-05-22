@@ -220,21 +220,37 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 取消订单
+     * 用户取消订单
      * @param id
      * @return
      */
     @Override
-    public void cancelOrder(Long id) {
+    public void userCancelOrder(Long id) {
         //获取订单信息
         Orders orders = orderMapper.getById(id);
+
+        //如果已接单则无法用户取消订单
+        if(orders.getStatus() > Orders.TO_BE_CONFIRMED){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //用户支付则返回金额--由于不能调用微信支付就只修改状态
+        if(orders.getPayStatus() == Orders.PAID){
+            orders.setPayMethod(Orders.REFUND);
+        }
 
         //设置订单状态
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
+        orders.setCancelReason(MessageConstant.USER_CANCEL);
         orderMapper.update(orders);
     }
-    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+
+    /**
+     * 商家取消订单
+     * @param ordersCancelDTO
+     */
+    public void adminCancelOrder(OrdersCancelDTO ordersCancelDTO) {
         //获取订单信息
         Orders orders = orderMapper.getById(ordersCancelDTO.getId());
 
@@ -253,37 +269,52 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Transactional
-    public void repetition(Long id) {
-        Orders orders = orderMapper.getById(id);
-        AddressBook addressBook = addressBookMapper.getById(orders.getAddressBookId());
-        //保存订单
-        Orders newOrder = Orders.builder()
-                .addressBookId(orders.getAddressBookId())
-                .remark(orders.getRemark())
-                .payMethod(orders.getPayMethod())
-                .deliveryStatus(orders.getDeliveryStatus())
-                .tablewareNumber(orders.getTablewareNumber())
-                .tablewareStatus(orders.getTablewareStatus())
-                .packAmount(orders.getPackAmount())
-                .amount(orders.getAmount())
-                .orderTime(LocalDateTime.now())
-                .userId(BaseContext.getCurrentId())
-                .status(Orders.PENDING_PAYMENT)
-                .payStatus(Orders.UN_PAID)
-                .phone(orders.getPhone())
-                .consignee(orders.getConsignee())
-                .number(String.valueOf(System.currentTimeMillis()))
-                .address(addressBook.getDetail())
-                .build();
-        orderMapper.insert(newOrder);
-        Long newOrderId = newOrder.getId();
-        //保存订单明细
+//    public void repetition(Long id) {   //直接下单版本
+//        Orders orders = orderMapper.getById(id);
+//        AddressBook addressBook = addressBookMapper.getById(orders.getAddressBookId());
+//        //保存订单
+//        Orders newOrder = Orders.builder()
+//                .addressBookId(orders.getAddressBookId())
+//                .remark(orders.getRemark())
+//                .payMethod(orders.getPayMethod())
+//                .deliveryStatus(orders.getDeliveryStatus())
+//                .tablewareNumber(orders.getTablewareNumber())
+//                .tablewareStatus(orders.getTablewareStatus())
+//                .packAmount(orders.getPackAmount())
+//                .amount(orders.getAmount())
+//                .orderTime(LocalDateTime.now())
+//                .userId(BaseContext.getCurrentId())
+//                .status(Orders.PENDING_PAYMENT)
+//                .payStatus(Orders.UN_PAID)
+//                .phone(orders.getPhone())
+//                .consignee(orders.getConsignee())
+//                .number(String.valueOf(System.currentTimeMillis()))
+//                .address(addressBook.getDetail())
+//                .build();
+//        orderMapper.insert(newOrder);
+//        Long newOrderId = newOrder.getId();
+//        //保存订单明细
+//        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+//        for (OrderDetail od : orderDetailList) {
+//            od.setOrderId(newOrderId);
+//            od.setId(null);
+//        }
+//        orderDetailMapper.insertBatch(orderDetailList);
+//    }
+    public void repetition(Long id) {   //将数据复制到购物车版本
+        Long userId = BaseContext.getCurrentId();
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        List<ShoppingCart> shoppingCarts = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
         for (OrderDetail od : orderDetailList) {
-            od.setOrderId(newOrderId);
-            od.setId(null);
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(od, shoppingCart);
+            shoppingCart.setId(null);
+            shoppingCart.setUserId(userId);
+            shoppingCart.setCreateTime(now);
+            shoppingCarts.add(shoppingCart);
         }
-        orderDetailMapper.insertBatch(orderDetailList);
+        shoppingCartMapper.insertBatch(shoppingCarts);
     }
 
     /**
