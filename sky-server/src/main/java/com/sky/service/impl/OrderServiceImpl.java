@@ -74,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setPhone(addressBook.getPhone());
         orders.setConsignee(addressBook.getConsignee());
         orders.setNumber(String.valueOf(System.currentTimeMillis()));
+        orders.setAddress(addressBook.getDetail());
         orderMapper.insert(orders);
 
         //保存订单明细
@@ -149,7 +150,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单支付
-     *
      * @param ordersPaymentDTO
      * @return
      */
@@ -255,6 +255,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void repetition(Long id) {
         Orders orders = orderMapper.getById(id);
+        AddressBook addressBook = addressBookMapper.getById(orders.getAddressBookId());
         //保存订单
         Orders newOrder = Orders.builder()
                 .addressBookId(orders.getAddressBookId())
@@ -272,6 +273,7 @@ public class OrderServiceImpl implements OrderService {
                 .phone(orders.getPhone())
                 .consignee(orders.getConsignee())
                 .number(String.valueOf(System.currentTimeMillis()))
+                .address(addressBook.getDetail())
                 .build();
         orderMapper.insert(newOrder);
         Long newOrderId = newOrder.getId();
