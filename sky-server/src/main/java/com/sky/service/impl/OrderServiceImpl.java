@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -234,5 +235,45 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
+    }
+
+
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
+    @Override
+    @Transactional
+    public void repetition(Long id) {
+        Orders orders = orderMapper.getById(id);
+        //保存订单
+        Orders newOrder = Orders.builder()
+                .addressBookId(orders.getAddressBookId())
+                .remark(orders.getRemark())
+                .payMethod(orders.getPayMethod())
+                .estimatedDeliveryTime(orders.getEstimatedDeliveryTime())
+                .deliveryStatus(orders.getDeliveryStatus())
+                .tablewareNumber(orders.getTablewareNumber())
+                .tablewareStatus(orders.getTablewareStatus())
+                .packAmount(orders.getPackAmount())
+                .amount(orders.getAmount())
+                .orderTime(LocalDateTime.now())
+                .userId(BaseContext.getCurrentId())
+                .status(Orders.PENDING_PAYMENT)
+                .payStatus(Orders.UN_PAID)
+                .phone(orders.getPhone())
+                .consignee(orders.getConsignee())
+                .number(String.valueOf(System.currentTimeMillis()))
+                .build();
+        orderMapper.insert(newOrder);
+        Long newOrderId = newOrder.getId();
+        //保存订单明细
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        for (OrderDetail od : orderDetailList) {
+            od.setOrderId(newOrderId);
+            od.setId(null);
+        }
+        orderDetailMapper.insertBatch(orderDetailList);
     }
 }

@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/user/order")
@@ -91,6 +92,19 @@ public class OrderController {
     public Result cancelOrder(@PathVariable Long id){
         log.info("取消订单," + id);
         orderService.cancelOrder(id);
+        return Result.success();
+    }
+
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
+    @PostMapping("/repetition/{id}")
+    @ApiOperation("再来一单")
+    public Result repetition(@PathVariable Long id){
+        log.info("再来一单, " + id);
+        orderService.repetition(id);
         return Result.success();
     }
 }
