@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -353,7 +354,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 根据订单id获取菜品信息字符串
-     *
      * @param orders
      * @return
      */
@@ -390,8 +390,13 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void confirm( OrdersConfirmDTO ordersConfirmDTO) {
-        Orders orders = orderMapper.getById(ordersConfirmDTO.getId());
-        orders.setStatus(Orders.CONFIRMED);
+//        Orders orders = orderMapper.getById(ordersConfirmDTO.getId());
+//        orders.setStatus(Orders.CONFIRMED);
+        //代码优化--减少查询数据库次数
+        Orders orders = Orders.builder()
+                .id(ordersConfirmDTO.getId())
+                .status(Orders.CONFIRMED)
+                .build();
         orderMapper.update(orders);
     }
 
@@ -402,7 +407,15 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void reject(OrdersRejectionDTO ordersRejectionDTO) {
+        //处于待接单才能拒单
         Orders orders = orderMapper.getById(ordersRejectionDTO.getId());
+        if(!Objects.equals(orders.getStatus(), Orders.TO_BE_CONFIRMED)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //用户已支付则自动退款
+        if (orders.getPayStatus() == Orders.PAID){
+            orders.setStatus(Orders.REFUND);
+        }
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
