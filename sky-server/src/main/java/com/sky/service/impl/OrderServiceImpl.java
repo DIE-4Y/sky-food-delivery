@@ -366,6 +366,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 完成订单
+     * @param id
+     * @return
+     */
+    @Override
+    public void complete(Long id) {
+        Orders orders = orderMapper.getById(id);
+        orders.setDeliveryTime(LocalDateTime.now());
+        orders.setStatus(Orders.COMPLETED);
+        orderMapper.update(orders);
+    }
+
+    /**
      * 设置退款状态
      * @param orders
      */
@@ -373,4 +386,5 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(7);
         orders.setPayStatus(Orders.REFUND);
     }
+
 }
