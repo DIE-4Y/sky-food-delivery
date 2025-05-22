@@ -16,7 +16,7 @@
     <select id="pageQuery" resultType="com.sky.entity.Orders">
         select * from orders
         <where>
-            user_id=#{userId}
+            <if test="userId != null">and user_id=#{userId}</if>
             <if test="id != null">and id=#{id}</if>
             <if test="number != null">and number=#{number}</if>
             <if test="status != null">and status=#{status}</if>

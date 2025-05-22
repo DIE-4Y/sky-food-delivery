@@ -1,7 +1,6 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -275,5 +274,35 @@ public class OrderServiceImpl implements OrderService {
             od.setId(null);
         }
         orderDetailMapper.insertBatch(orderDetailList);
+    }
+
+    /**
+     * 订单搜索
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult list(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Orders orders = new Orders();
+        if (ordersPageQueryDTO.getStatus() != null){
+            orders.setStatus(ordersPageQueryDTO.getStatus());
+        }
+
+        Page<Orders> page = orderMapper.pageQuery(orders);
+
+        //查询订单细
+        List<OrderVO> orderVOS = new ArrayList<>();
+        if (page != null && page.getTotal() > 0) {
+            for (Orders od : page) {
+                List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(od.getId());
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(od, orderVO);
+                orderVO.setOrderDetailList(orderDetailList);
+                orderVOS.add(orderVO);
+            }
+
+        }
+        return new PageResult(page.getTotal(), orderVOS);
     }
 }
