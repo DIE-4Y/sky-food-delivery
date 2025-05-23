@@ -11,6 +11,7 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.utils.HttpClientUtil;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -18,13 +19,12 @@ import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +41,12 @@ public class OrderServiceImpl implements OrderService {
     private AddressBookMapper addressBookMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    @Value("sky.baidu.ak")
+    private String ak;
+    @Value("sky.shop.address")
+    private String shopAddress;
+    private String baiduUrl = "https://api.map.baidu.com/geocoding/v3/";
+    private String baiduDistanceUrl ="https://api.map.baidu.com/directionlite/v1/";
 
     /**
      * 用户下单
@@ -65,6 +71,15 @@ public class OrderServiceImpl implements OrderService {
         if(shoppingCartList == null || shoppingCartList.isEmpty()){
             throw new OrderBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
+
+        
+        //判断是否超出5公里--由于未购买服务，ak不能使用
+//        String origin = getCoordinate(shopAddress);
+//        String dest = getCoordinate(addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
+//        Integer distance = getDistance(origin, dest);
+//        if (distance > 5000){
+//            throw new OrderBusinessException("超出配送范围");
+//        }
 
         //保存订单
         Orders orders = new Orders();
@@ -101,6 +116,49 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         return orderSubmitVO;
+    }
+
+    /**
+     * 获取经纬度
+     * @param dest
+     * @return lat,len的字符串
+     */
+    public String getCoordinate(String dest){
+        Map params = new LinkedHashMap<String, String>();
+        params.put("address", dest);
+        params.put("output", "json");
+        params.put("ak", ak);
+        String address = HttpClientUtil.doGet(baiduUrl, params);
+        JSONObject jsonObject = JSONObject.parseObject(address);
+        if (jsonObject.getInteger("status") != 0){ //解析失败--无法配送
+            throw new OrderBusinessException(dest + "坐标解析失败");
+        }
+        //获取经纬度
+        JSONObject location = jsonObject.getJSONObject("result").getJSONObject("location");
+        String lnt = location.getString("lnt");
+        String lat = location.getString("lat");
+        String coordinate = lat+","+lnt;
+        return coordinate;
+    }
+
+    /**
+     * 获取两地距离
+     * @param origin
+     * @param destination
+     * @return
+     */
+    public Integer getDistance(String origin, String destination){
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("ak", ak);
+        params.put("origin", origin);
+        params.put("destination", destination);
+        String result = HttpClientUtil.doGet(baiduDistanceUrl, params);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        if(jsonObject.getInteger("status")!=0){
+            throw new OrderBusinessException("配送路线规划失败");
+        }
+
+        return jsonObject.getJSONObject("result").getJSONObject("routes").getInteger("distance");
     }
 
     /**
@@ -434,8 +492,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delevery(Long id) {
         Orders orders = orderMapper.getById(id);
-        //只有处于待派送状态才能派送
-        if (orders.getStatus() != Orders.TO_BE_CONFIRMED){
+        //只有处于已接单状态才能派送
+        if (orders.getStatus() != Orders.CONFIRMED){
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
