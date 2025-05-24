@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -17,6 +18,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private AddressBookMapper addressBookMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
     @Value("sky.baidu.ak")
@@ -261,7 +265,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 直接成功修改订单状态
+     * 直接成功,修改订单状态
      * @param ordersPaymentDTO
      */
     public void paySuccess(OrdersPaymentDTO ordersPaymentDTO){
@@ -277,6 +281,16 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        //支付成功 群发消息
+        Map<Object, Object> map = new HashMap<>();
+        map.put("type", 1);//1是来单提醒 2是用户催单
+        map.put("orderId", ordersDB.getId());
+        map.put("content","订单号{}"+ordersDB.getNumber());
+
+        //转为json数据再转发
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**
