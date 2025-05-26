@@ -91,4 +91,13 @@
             <if test="status != null">and status = #{status}</if>
         </where>
     </select>
+
+    <select id="getTop10" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.`name`, sum(od.number) as number
+        from orders o join order_detail od on o.id = od.order_id
+        WHERE order_time BETWEEN #{beginTime} AND #{endTime} and status = 5
+        GROUP BY od.`name`
+        ORDER BY number DESC
+        limit 0, 10
+    </select>
 </mapper>
