@@ -4,11 +4,11 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisServer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -103,6 +103,71 @@ public class ReportServiceImpl implements ReportService {
                 .dateList(StringUtils.join(localDateList))
                 .newUserList(StringUtils.join(newUserList))
                 .totalUserList(StringUtils.join(userList))
+                .build();
+    }
+
+    /**
+     * 订单统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public OrderReportVO orderStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> localDateList = new ArrayList<>();
+        List<Integer> totalCountList = new ArrayList<>();
+        List<Integer> validCountList = new ArrayList<>();
+        while (!begin.equals(end)){
+            localDateList.add(begin);
+            begin = begin.plusDays(1);
+        }
+        localDateList.add(end);
+
+        //获得每天数据
+        for (LocalDate localDate : localDateList) {
+            LocalDateTime beginTime = LocalDateTime.of(localDate, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(localDate, LocalTime.MAX);
+
+            //计算当天总订单数
+            Map<Object, Object> map = new HashMap<>();
+            map.put("beginTime", beginTime);
+            map.put("endTime", endTime);
+            Integer totalCount = orderMapper.countByMap(map);
+            totalCountList.add(totalCount == null ? 0 : totalCount);
+
+            //计算有效订单数
+            map.put("status", Orders.COMPLETED);
+            Integer validCount = orderMapper.countByMap(map);
+            validCountList.add(validCount == null ? 0 : validCount);
+        }
+
+        Map<Object, Object> map = new HashMap<>();
+        begin = localDateList.get(0);
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+
+        //获得总订单数
+        map.put("beginTime", beginTime);
+        map.put("endTime", endTime);
+        Integer totalOrderCount = orderMapper.countByMap(map);
+
+        //获得总有效订单数
+        map.put("status", Orders.COMPLETED);
+        Integer validTotalCount = orderMapper.countByMap(map);
+
+        Double completeRate = 0.0;
+        if(totalOrderCount != 0){
+            completeRate = validTotalCount*1.0/totalOrderCount;
+        }
+
+        return OrderReportVO
+                .builder()
+                .dateList(StringUtils.join(localDateList, ","))
+                .orderCountList(StringUtils.join(totalCountList, ","))
+                .validOrderCountList(StringUtils.join(validCountList, ","))
+                .totalOrderCount(totalOrderCount == null ? 0 : totalOrderCount)
+                .validOrderCount(validTotalCount == null? 0 : validTotalCount)
+                .orderCompletionRate(completeRate)
                 .build();
     }
 }
