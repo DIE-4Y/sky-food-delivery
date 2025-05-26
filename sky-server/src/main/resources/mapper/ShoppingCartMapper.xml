@@ -35,7 +35,7 @@
         insert into shopping_cart(name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time)
         VALUES
         <foreach collection="shoppingCarts" item="sc" separator=",">
-            (#{name}, #{image}, #{userId}, #{dishId}, #{setmealId}, #{dishFlavor}, #{amount}, #{create_time})
+            (#{sc.name}, #{sc.image}, #{sc.userId}, #{sc.dishId}, #{sc.setmealId}, #{sc.dishFlavor}, #{sc.amount}, #{sc.createTime})
         </foreach>
     </insert>
 </mapper>
