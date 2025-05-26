@@ -535,12 +535,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 设置退款状态
-     * @param orders
+     * 催单
+     * @param id
+     * @return
      */
-    private void refund(Orders orders){
-        orders.setStatus(7);
-        orders.setPayStatus(Orders.REFUND);
-    }
+    @Override
+    public void reminder(Long id) {
+        Orders orderDB = orderMapper.getById(id);
+        if(orderDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
 
+        Map<Object, Object> map = new HashMap<>();
+        map.put("type", 2);//1是来单提醒 2是用户催单
+        map.put("orderId", id);
+        map.put("content","订单号{}"+ orderDB.getNumber());
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
 }
