@@ -47,7 +47,14 @@ public class ReportServiceImpl implements ReportService {
             //计算对应天的营业额
             LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(begin, LocalTime.MAX);
-            Double moneyOfDay = orderMapper.sumByTimeAndStatus(beginTime, endTime, Orders.COMPLETED);
+
+            Map<Object, Object> map = new HashMap<>();
+            map.put("beginTime", beginTime);
+            map.put("endTime", endTime);
+            map.put("status", Orders.COMPLETED);
+
+            Double moneyOfDay = orderMapper.sumByMap(map);
+//            Double moneyOfDay = orderMapper.sumByTimeAndStatus(beginTime, endTime, Orders.COMPLETED);
             moneyOfDay = moneyOfDay == null ? 0.0 : moneyOfDay;
             moneyList.add(moneyOfDay);
 
@@ -56,7 +63,15 @@ public class ReportServiceImpl implements ReportService {
         localDateList.add(end);
         LocalDateTime beginTime = LocalDateTime.of(end, LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MIN);
-        Double moneyOfDay = orderMapper.sumByTimeAndStatus(beginTime, endTime, Orders.COMPLETED);
+
+        Map<Object, Object> map = new HashMap<>();
+        map.put("beginTime", beginTime);
+        map.put("endTime", endTime);
+        map.put("status", Orders.COMPLETED);
+
+        Double moneyOfDay = orderMapper.sumByMap(map);
+
+//        Double moneyOfDay = orderMapper.sumByTimeAndStatus(beginTime, endTime, Orders.COMPLETED);
         moneyOfDay = moneyOfDay == null ? 0.0 : moneyOfDay;
         moneyList.add(moneyOfDay);
 

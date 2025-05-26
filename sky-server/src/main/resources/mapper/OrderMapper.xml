@@ -74,7 +74,7 @@
         where id = #{id}
     </update>
 
-    <select id="sumByTimeAndStatus" resultType="java.lang.Double">
+    <select id="sumByMap" resultType="java.lang.Double" parameterType="java.util.Map">
         select sum(amount) from orders
         <where>
             <if test="beginTime != null">and order_time &gt; #{beginTime}</if>

@@ -66,12 +66,10 @@ public interface OrderMapper {
 
     /**
      * 根据指定时间和状态获取总金额
-     * @param beginTime
-     * @param endTime
-     * @param status
+     * @param map
      * @return
      */
-    Double sumByTimeAndStatus(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
+    Double sumByMap(Map map);
 
     /**
      * 根据条件查询订单数
