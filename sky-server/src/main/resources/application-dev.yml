@@ -8,19 +8,11 @@ sky:
     password: root
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: youralikeyid
-    access-key-secret: youralikeysecret
-    bucket-name: yoursaliucketname
   redis:
     host: localhost
     port: 6379
     password: root
     # redis会有16个位数据库相互隔离 若不指定 默认为0号
     database: 0
-  wechat:
-    appid: yourappid
-    secret: yoursecret
-  baidu:
-    ak: yourak
   shop:
     address: yourshopaddress
