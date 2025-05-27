@@ -85,7 +85,7 @@ public class PayNotifyController {
      */
     private String decryptData(String body) throws Exception {
         JSONObject resultObject = JSON.parseObject(body);
-        JSONObject resource = resultObject.getJSONObject("resource");
+        JSONObject resource = resultObject.getJSONObject("template");
         String ciphertext = resource.getString("ciphertext");
         String nonce = resource.getString("nonce");
         String associatedData = resource.getString("associated_data");
