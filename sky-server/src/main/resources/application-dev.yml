@@ -8,9 +8,9 @@ sky:
     password: root
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: LTAI5tQ9w1X677haJzSzosnf
-    access-key-secret: IZC2bJtKsdxEvDX1StE5sTwsEE3bdS
-    bucket-name: di4-y
+    access-key-id: youralikeyid
+    access-key-secret: youralikeysecret
+    bucket-name: yoursaliucketname
   redis:
     host: localhost
     port: 6379
@@ -18,9 +18,9 @@ sky:
     # redis会有16个位数据库相互隔离 若不指定 默认为0号
     database: 0
   wechat:
-    appid: wx0ca3d61de980f164
-    secret: 48febecb62cb955f2af3d4332d5e6b5d
+    appid: yourappid
+    secret: yoursecret
   baidu:
-    ak: 92k2kgjaioif234ll3l4h34hutbsd
+    ak: yourak
   shop:
-    address: 北京市海淀区上地十街10号
+    address: yourshopaddress
